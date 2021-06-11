@@ -1,0 +1,29 @@
+syntax = "proto3";
+package proto;
+option go_package = "../proto";
+
+service MovieDetailService {
+    rpc MovieDetail(MovieDetailRequest) returns (MovieDetailResponse);
+}
+
+message MovieDetailRequest {
+    string omdbID = 1;
+}
+
+message MovieDetailResponse {
+    string title    = 1;
+    string year     = 2;
+    string rated    = 3;
+    string released = 4;
+    string runtime  = 5;
+    string genre    = 6;
+    string director = 7;
+    string writer   = 8;
+    string actors   = 9;
+    string plot     = 10;
+    string language = 11;
+    string country  = 12;
+    string awards   = 13;
+    string poster   = 14;
+    string response = 15;
+}
