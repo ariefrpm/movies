@@ -20,3 +20,14 @@ go build
 ```bash
 go run .
 ```
+
+### Rest API 
+```bash
+[GET] http://localhost:8080/api/search_movie?pagination2=1&searchword=Batman
+[GET] http://localhost:8080/api/movie_detail?i=tt0372784
+```
+
+### GRPC Client
+```bash
+go run sandbox/main.go
+```
