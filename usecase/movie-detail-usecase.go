@@ -6,6 +6,8 @@ import (
 	"github.com/ariefrpm/movies/repository/db"
 )
 
+type MovieDetailHandler func(MovieDetailUseCase) MovieDetailUseCase
+
 type MovieDetailUseCase interface {
 	MovieDetail(omdbID string) (*entity.MovieDetail, error)
 }

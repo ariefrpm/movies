@@ -2,25 +2,24 @@ package http
 
 import (
 	"fmt"
-	ctrl "github.com/ariefrpm/movies/controller/json"
 	"github.com/ariefrpm/movies/library/router"
 	"github.com/ariefrpm/movies/server"
-	"github.com/ariefrpm/movies/usecase"
+	"github.com/ariefrpm/movies/controller/json"
 	"log"
 	"net/http"
 )
 
 type httpServer struct {
-	searchMovieUseCase usecase.SearchMovieUseCase
-	movieDetailUseCase usecase.MovieDetailUseCase
+	searchMovieController controller.SearchMovieController
+	movieDetailController controller.MovieDetailController
 	port               int
 	errCh              chan error
 }
 
-func NewHttpServer(port int, searchMovieUseCase usecase.SearchMovieUseCase, movieDetailUseCase usecase.MovieDetailUseCase) server.Server {
+func NewHttpServer(port int, searchMovieController controller.SearchMovieController, movieDetailController controller.MovieDetailController) server.Server {
 	return &httpServer{
-		searchMovieUseCase: searchMovieUseCase,
-		movieDetailUseCase: movieDetailUseCase,
+		searchMovieController: searchMovieController,
+		movieDetailController: movieDetailController,
 		port:               port,
 	}
 }
@@ -30,8 +29,8 @@ func (h *httpServer) Run() {
 
 	route := router.NewDefaultRouter()
 
-	route.GET("/api/search_movie", ctrl.NewSearchMovieController(h.searchMovieUseCase).SearchMovie)
-	route.GET("/api/movie_detail", ctrl.NewMovieDetailController(h.movieDetailUseCase).MovieDetail)
+	route.GET("/api/search_movie", h.searchMovieController.SearchMovie)
+	route.GET("/api/movie_detail", h.movieDetailController.MovieDetail)
 
 	err := http.ListenAndServe(fmt.Sprintf(":%d", h.port), route.Handler())
 

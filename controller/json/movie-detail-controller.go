@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/ariefrpm/movies/model"
+	"github.com/ariefrpm/movies/repository/api"
 	"github.com/ariefrpm/movies/usecase"
 	"net/http"
 )
@@ -16,9 +17,15 @@ type movieDetailController struct {
 	movieDetailUseCase usecase.MovieDetailUseCase
 }
 
-func NewMovieDetailController(movieDetailUC usecase.MovieDetailUseCase) MovieDetailController {
+//func NewMovieDetailController(repo api.MovieRepo) usecase.MovieDetailHandler {
+//	return func(useCase usecase.MovieDetailUseCase) usecase.MovieDetailUseCase {
+//		return
+//	}
+//}
+
+func NewMovieDetailController(repo api.MovieRepo) MovieDetailController {
 	return &movieDetailController{
-		movieDetailUseCase: movieDetailUC,
+		movieDetailUseCase: usecase.NewMovieDetailUseCase(repo, ),
 	}
 }
 

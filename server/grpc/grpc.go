@@ -2,26 +2,24 @@ package grpc
 
 import (
 	"fmt"
-	service "github.com/ariefrpm/movies/controller/proto"
 	"github.com/ariefrpm/movies/proto"
 	"github.com/ariefrpm/movies/server"
-	"github.com/ariefrpm/movies/usecase"
 	"google.golang.org/grpc"
 	"log"
 	"net"
 )
 
 type grpcServer struct {
-	searchMovieUseCase usecase.SearchMovieUseCase
-	movieDetailUseCase usecase.MovieDetailUseCase
+	searchMovieController proto.SearchMovieServiceServer
+	movieDetailController proto.MovieDetailServiceServer
 	port               int
 	errCh              chan error
 }
 
-func NewGrpcServer(port int, searchMovieUseCase usecase.SearchMovieUseCase, movieDetailUseCase usecase.MovieDetailUseCase) server.Server {
+func NewGrpcServer(port int, searchMovieController proto.SearchMovieServiceServer, movieDetailController proto.MovieDetailServiceServer) server.Server {
 	return &grpcServer{
-		searchMovieUseCase: searchMovieUseCase,
-		movieDetailUseCase: movieDetailUseCase,
+		searchMovieController: searchMovieController,
+		movieDetailController: movieDetailController,
 		port:               port,
 	}
 }
@@ -35,11 +33,8 @@ func (g *grpcServer) Run() {
 	}
 	grpcServer := grpc.NewServer()
 
-	movieDetailService := service.NewMovieDetailService(g.movieDetailUseCase)
-	searchMovieService := service.NewSearchMovieService(g.searchMovieUseCase)
-
-	proto.RegisterMovieDetailServiceServer(grpcServer, movieDetailService)
-	proto.RegisterSearchMovieServiceServer(grpcServer, searchMovieService)
+	proto.RegisterMovieDetailServiceServer(grpcServer, g.movieDetailController)
+	proto.RegisterSearchMovieServiceServer(grpcServer, g.searchMovieController)
 
 	err = grpcServer.Serve(lis)
 	if err != nil {

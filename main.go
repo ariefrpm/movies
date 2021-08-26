@@ -1,7 +1,9 @@
 package main
 
 import (
+	controller "github.com/ariefrpm/movies/controller/json"
 	client "github.com/ariefrpm/movies/library/http-client"
+	service "github.com/ariefrpm/movies/controller/proto"
 	"github.com/ariefrpm/movies/repository/api"
 	"github.com/ariefrpm/movies/repository/db"
 	"github.com/ariefrpm/movies/server/grpc"
@@ -16,11 +18,18 @@ import (
 func main() {
 	movieApiRepo := api.NewMovieRepo(client.NewDefaultHttpClient())
 	loggingRepo := db.NewLogging()
-	movieDetailUseCase := usecase.NewMovieDetailUseCase(movieApiRepo, loggingRepo)
+
+	var movieDetailUseCase usecase.MovieDetailUseCase
+	movieDetailUseCase = usecase.NewMovieDetailUseCase(movieApiRepo, loggingRepo)
 	searchMovieUseCase := usecase.NewSearchMovieUseCase(movieApiRepo, loggingRepo)
 
-	httpServer := http.NewHttpServer(8080, searchMovieUseCase, movieDetailUseCase)
-	grpcServer := grpc.NewGrpcServer(9000, searchMovieUseCase, movieDetailUseCase)
+	movieDetailController := controller.NewMovieDetailController(movieDetailUseCase)
+	searchMovieController := controller.NewSearchMovieController(searchMovieUseCase)
+	movieDetailService := service.NewMovieDetailService(movieDetailUseCase)
+	searchMovieService := service.NewSearchMovieService(searchMovieUseCase)
+
+	httpServer := http.NewHttpServer(8080, searchMovieController, movieDetailController)
+	grpcServer := grpc.NewGrpcServer(9000, searchMovieService, movieDetailService)
 
 	go httpServer.Run()
 	go grpcServer.Run()
